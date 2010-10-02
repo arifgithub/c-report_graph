@@ -65,7 +65,8 @@ if(isset($_POST['Submit']))
 	
 	
 	$fileCount = count($_FILES['fileCSV']['name']);
-	
+
+    //============ Parsing data from file into array (start) ============
 	foreach($_FILES['fileCSV']['tmp_name'] as $fkey => $fval)
 	{
 	
@@ -79,6 +80,7 @@ if(isset($_POST['Submit']))
 		//printr($a_str);
 		
 		$station = "";
+        $timestamp = 0;
 		$a_result = array();
 		$i=5;
 		$counter = count($a_str);
@@ -90,11 +92,11 @@ if(isset($_POST['Submit']))
 			}
 			//printr($tmp);
 			$timestamp = (int) strtotime(get_real_time_format($tmp[1]));
-			$exists = array_key_exists($timestamp, $a_result);
+			//$exists = array_key_exists($timestamp, $a_result);
 			if(array_key_exists($timestamp, $a_result)){
 				$a_result[$timestamp]['timestamp'] = $timestamp + 30;
 				$a_result[$timestamp]['dateTime'] = date('d/m/Y h:i:sa', $timestamp + 30);
-				$a_result[$timestamp + 30] = $a_result[$timestamp];
+				$a_result[$timestamp + 30] = $a_result[$timestamp];//if(($timestamp+30)==1282379550)echo "got value";
 			}
 			//----------------------------------------------------
 			$latlong = explode(' ', $tmp[2]);
@@ -114,22 +116,28 @@ if(isset($_POST['Submit']))
 			$i += 3;
 			
 		}while($i<$counter);
-		
-		ksort($a_result);
-		
+        //============ Parsing data from file into array (end) ==============
+
+        // Sorting array in ascending order
+        ksort($a_result);
+        
 		//echo count($a_result);
 		//printr($a_result);
-		
+
+        //============ Generating line string to use in JS (start) ============
 		$iTime = 1;
 		$iDist = 1;
 		$aCount = count($a_result);
+        $dd = 0;
+        unset($lat2);
+        unset($lon2);
 		
 		foreach ($a_result as $key => $val) {
 			$lat1 = $val['lat'];
 			$lon1 = $val['long'];
 			//$str .= "[$lat1, $lon1],";
-			if($iTime==1){ $minTime = $val['timestamp']; }
-			if($iTime==$aCount){ $maxTime = $val['timestamp']; }
+			if($iTime==1){ $time[$fkey]['minTime'] = $minTime = $val['timestamp']; }
+			if($iTime==$aCount){ $time[$fkey]['maxTime'] = $maxTime = $val['timestamp']; }
 			
 			if(!isset($str[$fkey]['trainID'])){
 				$str[$fkey]['trainID'] = $val['trainID'];
@@ -143,9 +151,6 @@ if(isset($_POST['Submit']))
 				if($iDist==1 || !isset($minDist)){ $minDist = $d; }
 				if($iDist==$aCount){ $maxDist = $dd; }
 			
-				if(!isset($tStamp)){
-					$tStamp = strtotime(date('Y-m-d H:00:00',$val['timestamp']));
-				}
 				$str[$fkey]['line'] .= "[".$val['timestamp'].", ".($dd)."],";
 			}
 			$lat2 = $lat1;
@@ -156,7 +161,20 @@ if(isset($_POST['Submit']))
 		}// End result loop
 		$str[$fkey]['track'] = $_POST['selTrack'][$fkey];
 	}// End file loop
-	
+    //============ Generating line string to use in JS (end) ==============
+
+    //============ Making xAxis base line value string to use in JS (start) ============
+	//TODO: min-time and max time need to fix
+    //printr($time);
+    foreach($time as $val){
+        if($minTime>$val['minTime']){
+            $minTime = $val['minTime'];
+        }
+        if($maxTime<$val['maxTime']){
+            $maxTime = $val['maxTime'];
+        }
+    }//echo $minTime.'::'.$maxTime;
+    $tStamp = strtotime(date('Y-m-d H:00:00',$minTime));
 	$interval = 60;
 	for($i=$minTime; $i<=($maxTime+($maxTime-$minTime)); $i+=60)
 	{
@@ -167,6 +185,7 @@ if(isset($_POST['Submit']))
 		$interval += 60;
 		//echo $i."<br>";
 	}
+    //============ Making xAxis base line value string to use in JS (end) ==============
 
 	/*
 	//echo ":".$minDist.'-'.$maxDist;
@@ -213,14 +232,12 @@ if(isset($_POST['Submit']))
 Submit a CSV track report file: <br>
 <input name="fileCSV[]" type="file" id="fileCSV[]">
         <select name="selTrack[]">
-			<option value="">--Select Track--</option>
 			<option>Up Track</option>
 			<option>Down Track</option>
         </select>
         <br>
         <input name="fileCSV[]" type="file" id="fileCSV[]">
         <select name="selTrack[]">
-			<option value="">--Select Track--</option>
 			<option>Up Track</option>
 			<option>Down Track</option>
         </select>
@@ -237,14 +254,14 @@ $(function () {
 	var placeholder = $("#placeholder");
 	 
 	<?php foreach($str as $key => $val){
-		$Data .= '{data:['.rtrim($val['line'], ',').'], label: "'.$val['trainID'].':'.$val['track'].'", color: '.$key.' },';
+		$Data .= '{data:['.rtrim($val['line'], ',').'], label: "'.$val['trainID'].':'.$val['track'].'", color: '.($key+2).' },'."\n";
 	}
 	?>
 
 	//var d2 = [<?php echo rtrim($str[0], ',');?>];
 	//var d2Data = {data:d2, label: "Up track", color: 2 };
 
-	var data = [ <?php echo rtrim($Data, ',');?>, {data:[], color: 1,  yaxis: 2 } ];
+	var data = [ <?php echo rtrim($Data, ",\n");?>, {data:[], color: 1,  yaxis: 2 } ];
 
     var plot = $.plot(placeholder, data,
 		{ 
