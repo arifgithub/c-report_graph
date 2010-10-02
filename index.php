@@ -52,7 +52,7 @@ if(isset($_POST['Submit']))
 	//exit;
 	
 	//======================= Y axis values (start) ==============================
-	$a_destName = file('files/route/route_da_ctg.csv');
+	$a_destName = file('files/route/'.$_POST['selRoot'].'.csv');
 	$i=1;
 	do{
 		$tmp = explode(',', $a_destName[$i]);
@@ -207,21 +207,44 @@ if(isset($_POST['Submit']))
     <script language="javascript" type="text/javascript" src="js/jquery.flot.js"></script>
 	<script language="javascript" type="text/javascript" src="js/jquery.flot.navigate.js"></script>
 	<style>
-	#placeholder .button {
-		position: absolute;
-		cursor: pointer;
-	}
-	#placeholder div.button {
-		font-size: smaller;
-		color: #999;
-		background-color: #eee;
-		padding: 2px;
-	}
-	.message {
-		padding-left: 50px;
-		font-size: smaller;
-	}
-	</style>
+        #track-root{
+            padding-bottom: 10px;
+        }
+        #track-file-group .track-file{
+            padding-bottom: 10px;
+        }
+        #placeholder .button-zoom-in,
+        #placeholder .button-zoom-out,
+        #placeholder .button{
+            position: absolute;
+            cursor: pointer;
+        }
+        #placeholder .button-zoom-in,
+        #placeholder .button-zoom-out,
+        #placeholder div.button {
+            font-size: smaller;
+            color: #999;
+            background-color: #eee;
+            padding: 2px;
+        }
+        #placeholder .button-zoom-in,
+        #placeholder .button-zoom-out{
+            top: 40px;
+            padding: 3px 8px;
+        }
+
+        #placeholder .button-zoom-in{
+            left: 160px;
+
+        }
+        #placeholder .button-zoom-out{
+            left: 240px;
+        }
+        .message {
+            padding-left: 50px;
+            font-size: smaller;
+        }
+    </style>
 
  </head>
     <body>
@@ -229,20 +252,17 @@ if(isset($_POST['Submit']))
     </h1>
 
     <form name="form1" enctype="multipart/form-data" method="post" action="">
-Submit a CSV track report file: <br>
-<input name="fileCSV[]" type="file" id="fileCSV[]">
-        <select name="selTrack[]">
-			<option>Up Track</option>
-			<option>Down Track</option>
-        </select>
-        <br>
-        <input name="fileCSV[]" type="file" id="fileCSV[]">
-        <select name="selTrack[]">
-			<option>Up Track</option>
-			<option>Down Track</option>
-        </select>
-        <br>
+        Select the root:
+        <div id="track-root">
+            <select name="selRoot">
+                <option value="route_da_ctg">Dhaka-Chittagong</option>
+            </select>
+        </div>
+        
+        Submit a CSV track report file:
+        <div id="track-file-group"></div>
         <input type="submit" name="Submit" value="  Submit  ">
+        <input type="button" id="btnAddMore" value="  Add More  ">
         <br>
         <br>
     </form>
@@ -254,7 +274,7 @@ $(function () {
 	var placeholder = $("#placeholder");
 	 
 	<?php foreach($str as $key => $val){
-		$Data .= '{data:['.rtrim($val['line'], ',').'], label: "'.$val['trainID'].':'.$val['track'].'", color: '.($key+2).' },'."\n";
+		$Data .= '{data:['.rtrim($val['line'], ',').'], label: "'.$val['trainID'].':'.$val['track'].'", color: '.$key.' },'."\n";
 	}
 	?>
 
@@ -291,13 +311,13 @@ $(function () {
 	);
 	
 	// add zoom out button 
-    $('<div class="button" style="left:200px;top:20px">zoom out</div>').appendTo(placeholder).click(function (e) {
+    $('<div class="button-zoom-out">zoom out</div>').appendTo(placeholder).click(function (e) {
         e.preventDefault();
         plot.zoomOut();
     });
 	
 	// add zoom in button 
-    $('<div class="button" style="left:205px;top:42px">zoom in</div>').appendTo(placeholder).click(function (e) {
+    $('<div class="button-zoom-in">zoom in</div>').appendTo(placeholder).click(function (e) {
         e.preventDefault();
         plot.zoom();
     });
@@ -311,14 +331,36 @@ $(function () {
             plot.pan(offset);
         });
     }
-    addArrow('left', 185, 60, { left: -100 });
-    addArrow('right', 155, 60, { left: 100 });
-    addArrow('up', 170, 45, { top: -100 });
-    addArrow('down', 170, 75, { top: 100 });
+    addArrow('left', 885, 40, { left: -100 });
+    addArrow('right', 855, 40, { left: 100 });
+    addArrow('up', 870, 25, { top: -100 });
+    addArrow('down', 870, 55, { top: 100 });
 
 
 });
 </script>
+
+    <script type="text/javascript">
+
+$(document).ready(function(){
+
+    var file_browser = '<div class="track-file"> <input name="fileCSV[]" type="file" id="fileCSV[]"> <select name="selTrack[]"> <option>Up Track</option> <option>Down Track</option> </select> </div>';
+    var file_browser_with_button = '<div class="track-file"> <input name="fileCSV[]" type="file" id="fileCSV[]"> <select name="selTrack[]"> <option>Up Track</option> <option>Down Track</option> </select> <input type="button" id="btnRemove" onclick="removeThisTrack(this);" value="  Remove  "></div>';
+
+    $('#btnAddMore').click(function(){
+        $('#track-file-group').append(file_browser_with_button);
+    });
+
+    removeThisTrack = function(elem){
+        $(elem).parent().fadeOut(200, function(){
+            $(this).remove();
+        });
+	};
+
+    $('#track-file-group').append(file_browser);
+});
+
+    </script>
 
  </body>
 </html>
