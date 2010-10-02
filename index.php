@@ -164,16 +164,16 @@ if(isset($_POST['Submit']))
     //============ Generating line string to use in JS (end) ==============
 
     //============ Making xAxis base line value string to use in JS (start) ============
-	//TODO: min-time and max time need to fix
-    //printr($time);
-    foreach($time as $val){
+	foreach($time as $val){
         if($minTime>$val['minTime']){
             $minTime = $val['minTime'];
         }
         if($maxTime<$val['maxTime']){
             $maxTime = $val['maxTime'];
         }
-    }//echo $minTime.'::'.$maxTime;
+    }
+    //printr($time);
+    //echo $minTime.'::'.$maxTime;
     $tStamp = strtotime(date('Y-m-d H:00:00',$minTime));
 	$interval = 60;
 	for($i=$minTime; $i<=($maxTime+($maxTime-$minTime)); $i+=60)
