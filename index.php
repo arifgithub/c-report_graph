@@ -259,7 +259,7 @@ if(isset($_POST['Submit']))
             </select>
         </div>
         
-        Submit a CSV track report file:
+        Submit CSV track report file:
         <div id="track-file-group"></div>
         <input type="submit" name="Submit" value="  Submit  ">
         <input type="button" id="btnAddMore" value="  Add More  ">
