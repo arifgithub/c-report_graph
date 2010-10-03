@@ -52,7 +52,7 @@ if(isset($_POST['Submit']))
 	//exit;
 	
 	//======================= Y axis values (start) ==============================
-	$a_destName = file('files/route/'.$_POST['selRoot'].'.csv');
+	$a_destName = file('files/route/'.$_POST['selRoute'].'.csv');
 	$i=1;
 	do{
 		$tmp = explode(',', $a_destName[$i]);
@@ -164,12 +164,14 @@ if(isset($_POST['Submit']))
     //============ Generating line string to use in JS (end) ==============
 
     //============ Making xAxis base line value string to use in JS (start) ============
-	foreach($time as $val){
-        if($minTime>$val['minTime']){
-            $minTime = $val['minTime'];
-        }
-        if($maxTime<$val['maxTime']){
-            $maxTime = $val['maxTime'];
+    if (is_array($time)) {
+        foreach ($time as $val) {
+            if ($minTime > $val['minTime']) {
+                $minTime = $val['minTime'];
+            }
+            if ($maxTime < $val['maxTime']) {
+                $maxTime = $val['maxTime'];
+            }
         }
     }
     //printr($time);
@@ -207,6 +209,18 @@ if(isset($_POST['Submit']))
     <script language="javascript" type="text/javascript" src="js/jquery.flot.js"></script>
 	<script language="javascript" type="text/javascript" src="js/jquery.flot.navigate.js"></script>
 	<style>
+        .page-header h1{
+            line-height:0;
+        }
+        .page-header h3{
+            line-height:0;
+            padding-top:5px;
+        }
+        .page-header h4{
+            color:#9999AF;
+            line-height:10px;
+        }
+        /********************/
         #track-root{
             padding-bottom: 10px;
         }
@@ -215,12 +229,14 @@ if(isset($_POST['Submit']))
         }
         #placeholder .button-zoom-in,
         #placeholder .button-zoom-out,
+        #placeholder .route-label,
         #placeholder .button{
             position: absolute;
             cursor: pointer;
         }
         #placeholder .button-zoom-in,
         #placeholder .button-zoom-out,
+        #placeholder .route-label,
         #placeholder div.button {
             font-size: smaller;
             color: #999;
@@ -240,6 +256,12 @@ if(isset($_POST['Submit']))
         #placeholder .button-zoom-out{
             left: 240px;
         }
+        #placeholder .route-label{
+            top: 20px;
+            left: 400px;
+            padding: 3px 8px;
+            text-align: center;
+        }
         .message {
             padding-left: 50px;
             font-size: smaller;
@@ -248,20 +270,28 @@ if(isset($_POST['Submit']))
 
  </head>
     <body>
-    <h1>Graph Presentation<br>
-    </h1>
-
+        <div class="page-header">
+            <h1>Train Control Chart</h1>
+            <h3>Bangladesh Railway</h3>
+            <h4>[ Developed by - S. M. Ariful Islam, Suncrops ]</h4>
+        </div>
+        <hr style="padding-bottom:20px;border:0;border-top: 1px dotted #000;" />
     <form name="form1" enctype="multipart/form-data" method="post" action="">
-        Select the root:
+        Select the route:
         <div id="track-root">
-            <select name="selRoot">
-                <option value="route_da_ctg">Dhaka-Chittagong</option>
+            <select id="selRoute" name="selRoute">
+                <option value="">--select a route</option>
+                <option value="Dhaka-Bahadurabad" <?php if($_POST['selRoute']=='Dhaka-Bahadurabad') echo "selected";?>>Dhaka-Bahadurabad</option>
+                <option value="Dhaka-Chittagong" <?php if($_POST['selRoute']=='Dhaka-Chittagong') echo "selected";?>>Dhaka-Chittagong</option>
+                <option value="Dhaka-Khulna" <?php if($_POST['selRoute']=='Dhaka-Khulna') echo "selected";?>>Dhaka-Khulna</option>
+                <option value="Dhaka-Rajshahi" <?php if($_POST['selRoute']=='Dhaka-Rajshahi') echo "selected";?>>Dhaka-Rajshahi</option>
+                <option value="Dhaka-Sylhet" <?php if($_POST['selRoute']=='Dhaka-Sylhet') echo "selected";?>>Dhaka-Sylhet</option>
             </select>
         </div>
         
         Submit CSV track report file:
         <div id="track-file-group"></div>
-        <input type="submit" name="Submit" value="  Submit  ">
+        <input type="submit" id="btn-submit" name="Submit" value="  Submit  ">
         <input type="button" id="btnAddMore" value="  Add More  ">
         <br>
         <br>
@@ -321,6 +351,9 @@ $(function () {
         e.preventDefault();
         plot.zoom();
     });
+
+    // add Route label
+    $('<div class="route-label">Selected route is- <br/><b><?=$_POST['selRoute'];?></b></div>').appendTo(placeholder);
 	
 	// and add panning buttons
     // little helper for taking the repetitive work out of placing
@@ -358,6 +391,14 @@ $(document).ready(function(){
 	};
 
     $('#track-file-group').append(file_browser);
+
+    $('#btn-submit').click(function(){
+        if($('#selRoute').val()==""){
+            alert('Your have to choose a route first.');
+            $('#selRoute').focus();
+            //return false;
+        }
+    });
 });
 
     </script>

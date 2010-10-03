@@ -1,0 +1,62 @@
+dist_from_origin,dist_inbetween,stn_name, stn_code
+0,0,Dhaka,DA
+6.44,6.44,Tejgao,TJN
+10.86,4.42,Bonani,BNNI
+13.27,2.41,Dhaka Cantonment,DACT
+18.28,5.01,Dhaka Biman Bondor,DABB
+24.93,6.65,Tongi ,TGI
+31.37,6.44,Dhirasrom,DRM
+36.2,4.83,Joydebpur,JYR
+52.2,16,Mowchak,MOCK
+73,20.8,Mirzapur,MZRP
+83.16,10.16,Mohera,MHRA
+98.9,15.74,Tangail,TAGL
+119.8,20.9,Jamuna Bridge East,
+128.99,9.19,Jamuna Bridge West,SYBD
+133.4,4.41,Shodanondopur,SDNP
+139.9,6.5,Jamtoil,JOI
+147.06,7.16,Sholop,SOV
+152.32,5.26,Ullapara,ULP
+160.4,8.08,Lahiri Mohonpur,LMR
+166.03,5.63,Dilpashar,DIS
+171.16,5.13,Shorotnogor,SNG
+173.66,2.5,Boral Bridge,BRBE
+175.4,1.74,Bhangura,BOO
+179.66,4.26,Guakhora,GAK
+184.89,5.23,Chatmohor,CMO
+190.55,5.66,Gofurabad,GFB
+197.96,7.41,Muladuli,MODI
+203.66,5.7,Majhgram,MZRA
+206.08,2.42,Ishordi bipash,ISDB
+209.86,3.78,Ishordi,ISDB
+217.64,7.78,Pakshi,PEY
+226.17,8.53,Bheramara,BYM
+235.29,9.12,Mirpur,MIP
+244.8,9.51,Poradoho,PDB
+251.89,7.09,Halsa,HS
+260.4,8.51,Alomdanga,ADG
+266.88,6.48,Munsihogonj,MSG
+270.74,3.86,Mominpur,MMPR
+276.19,5.45,Chudanga,CO
+285.51,9.32,Joyrampur,JRP
+286.53,1.02,Dorshona Halt,DSNH
+292.2,5.67,Utholi,ULF
+296.3,4.1,Ansarbaria,ABC
+304.67,8.37,Shafdarpur,SDX
+312.6,7.93,Kotchadpur,KCPR
+319.67,7.07,Shundorpur,SXY
+324.53,4.86,Mobarokgonj,MBRG
+335.6,11.07,Barobazar,BBZR
+346.01,10.41,Meherullanogor,MEN
+349.8,3.79,Jessor cantonment,JSC
+354.77,4.97,Jessor,JS
+363.54,8.77,Rupadia,RDA
+369.97,6.43,Shingia,SGN
+375.68,5.71,Chengutia,CGT
+381.33,5.65,Noapara,NAP
+389.53,8.2,Bejerdanga,BEZ
+393.62,4.09,Fultola,PTL
+403.31,9.69,Doulotpur,DT
+404.43,1.12,Doulotpur college,DTZ
+408.43,4,Khulna Jn,KLNJ
+410.77,2.34,Khulna,KLN
