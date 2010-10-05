@@ -107,7 +107,7 @@ if(isset($_POST['Submit']))
 			$a_result[$timestamp]['station'] = trim($station);
 			$a_result[$timestamp]['timestamp'] = $timestamp;
 			$a_result[$timestamp]['dateTime'] = date('d/m/Y h:i:sa', $timestamp);
-			$a_result[$timestamp]['trainID'] = $tmp[0];
+			$a_result[$timestamp]['trainID'] = ucwords(str_replace(array('-','_'), ' ', basename($_FILES['fileCSV']['name'][$fkey], '.csv')));
 			$a_result[$timestamp]['lat'] = $lat[1];
 			$a_result[$timestamp]['long'] = $long[1];
 			$a_result[$timestamp]['speed'] = trim($speed[1]);
@@ -304,7 +304,7 @@ $(function () {
 	var placeholder = $("#placeholder");
 	 
 	<?php foreach($str as $key => $val){
-		$Data .= '{data:['.rtrim($val['line'], ',').'], label: "'.$val['trainID'].':'.$val['track'].'", color: '.$key.' },'."\n";
+		$Data .= '{data:['.rtrim($val['line'], ',').'], label: "'.$val['trainID'].' : '.$val['track'].'", color: '.$key.' },'."\n";
 	}
 	?>
 
