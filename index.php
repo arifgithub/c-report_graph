@@ -119,7 +119,11 @@ if(isset($_POST['Submit']))
         //============ Parsing data from file into array (end) ==============
 
         // Sorting array in ascending order
-        ksort($a_result);
+		if($_POST['selTrack'][$fkey]=='Up Track'){
+        	ksort($a_result);
+		}else{
+			krsort($a_result);
+		}
         
 		//echo count($a_result);
 		//printr($a_result);
@@ -136,8 +140,13 @@ if(isset($_POST['Submit']))
 			$lat1 = $val['lat'];
 			$lon1 = $val['long'];
 			//$str .= "[$lat1, $lon1],";
-			if($iTime==1){ $time[$fkey]['minTime'] = $minTime = $val['timestamp']; }
-			if($iTime==$aCount){ $time[$fkey]['maxTime'] = $maxTime = $val['timestamp']; }
+			if($_POST['selTrack'][$fkey]=='Up Track'){
+				if($iTime==1){ $time[$fkey]['minTime'] = $minTime = $val['timestamp']; }
+				if($iTime==$aCount){ $time[$fkey]['maxTime'] = $maxTime = $val['timestamp']; }
+			}else{
+				if($iTime==1){ $time[$fkey]['maxTime'] = $maxTime = $val['timestamp']; }
+				if($iTime==$aCount){ $time[$fkey]['minTime'] = $minTime = $val['timestamp']; }
+			}
 			
 			if(!isset($str[$fkey]['trainID'])){
 				$str[$fkey]['trainID'] = $val['trainID'];
@@ -182,7 +191,7 @@ if(isset($_POST['Submit']))
 	{
 		if( (($interval/60)%20) == 0 ){
 			//echo "$tStamp<br/>";
-			$xStr .= '['.($tStamp+$interval).', "'.date("M,d-H:i", ($tStamp+$interval)).'"], ';
+			$xStr .= '['.($tStamp+$interval).', "<div>'.date("M,d-H:i", ($tStamp+$interval)).'</div>"], ';
 		}
 		$interval += 60;
 		//echo $i."<br>";
@@ -266,6 +275,12 @@ if(isset($_POST['Submit']))
             padding-left: 50px;
             font-size: smaller;
         }
+		/***************************/
+		.tickLabel div{
+			-webkit-transform: rotate(-90deg);
+			-moz-transform: rotate(90deg); 
+			margin-top: 10px;
+		}
     </style>
 
  </head>
@@ -290,7 +305,15 @@ if(isset($_POST['Submit']))
         </div>
         
         Submit CSV track report file:
-        <div id="track-file-group"></div>
+        <div id="track-file-group">
+			<div class="track-file">
+				<input name="fileCSV[]" type="file" id="fileCSV[]">
+				<select name="selTrack[]">
+					<option>Up Track</option>
+					<option>Down Track</option>
+				</select>
+			</div>
+		</div>
         <input type="submit" id="btn-submit" name="Submit" value="  Submit  ">
         <input type="button" id="btnAddMore" value="  Add More  ">
         <br>
@@ -303,8 +326,10 @@ $(function () {
 	
 	var placeholder = $("#placeholder");
 	 
-	<?php foreach($str as $key => $val){
-		$Data .= '{data:['.rtrim($val['line'], ',').'], label: "'.$val['trainID'].' : '.$val['track'].'", color: '.$key.' },'."\n";
+	<?php 
+	$colorCode = 2;
+	foreach($str as $key => $val){
+		$Data .= '{data:['.rtrim($val['line'], ',').'], label: "'.$val['trainID'].' : '.$val['track'].'", color: '.($colorCode++).' },'."\n";
 	}
 	?>
 
@@ -317,7 +342,8 @@ $(function () {
 		{ 
 			series: { lines: { show: true }, shadowSize: 0 },
 			xaxis: {
-                ticks: [ <?php echo rtrim($xStr, ', ');?> ]
+                ticks: [ <?php echo rtrim($xStr, ', ');?> ],
+				tickFormatter: 1
             },
 			yaxis: {
                 ticks: [ <?php echo rtrim($yStr, ', ');?> ],
@@ -390,7 +416,7 @@ $(document).ready(function(){
         });
 	};
 
-    $('#track-file-group').append(file_browser);
+    //$('#track-file-group').append(file_browser);
 
     $('#btn-submit').click(function(){
         if($('#selRoute').val()==""){
