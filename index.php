@@ -4,174 +4,140 @@
  * and open the template in the editor.
  */
 
-/****************************************************
-    [6] => Tista 707-708,8/21/2010 13:23,"lat:25.157975 long:089.755680 speed:000.0
+require_once('lib/lib_base.php');
 
-    [7] => T:21/08/10  13:23
 
-    [8] => http://www.wxlxy.com/GPSTracker.aspx?key=354776837427636@1263800.150@4534080.712",
+if (isset($_POST['Submit'])) {
+    //printr($_FILES);
+    //exit;
+    //======================= Y axis values (start) ==============================
+    $a_destName = file('files/route/' . $_POST['selRoute'] . '.csv');
+    $i = 1;
+    do {
+        $tmp = explode(',', $a_destName[$i]);
+        $yStr .= '[' . $tmp[0] . ', "km ' . $tmp[0] . '"], ';
+        $y2Str .= '[' . $tmp[0] . ', "' . $tmp[2] . '"], ';
+        $mapHeight +=10;
+        $i++;
+    } while ($i < count($a_destName));
+    //======================= Y axis values (end) ================================
 
-    --------------------------------------------------
 
-    d = acos( sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(lon1-lon2) )
-
- *****************************************************/
-
-function printr($a_str)
-{
-    echo "<pre>";
-    print_r($a_str);
-    echo "</pre>";
-}
-
-function get_real_time_format($date_str)
-{
-    $a1 = explode(' ', $date_str);
-    $a2 = explode('/', $a1[0]);
-
-    $new_date_str = $a2[2].'/'.$a2[0].'/'.$a2[1].' '.$a1[1];
-
-    return $new_date_str;
-}
-
-function get_distance($lat1, $lat2, $lon1, $lon2)
-{
-    //$radius = 3437.74677; // nautical miles
-    //$radius = 3963.0; // statute miles
-
-    $radius = 6378.7; // kilometers
-
-    $dist = $radius * acos(sin($lat1/57.2958) * sin($lat2/57.2958) + cos($lat1/57.2958) * cos($lat2/57.2958) * cos($lon2/57.2958 - $lon1/57.2958));
-
-    return $dist;
-}
-
-if(isset($_POST['Submit']))
-{
-	//printr($_FILES);
-	//exit;
-	
-	//======================= Y axis values (start) ==============================
-	$a_destName = file('files/route/'.$_POST['selRoute'].'.csv');
-	$i=1;
-	do{
-		$tmp = explode(',', $a_destName[$i]);
-		$yStr .= '['.$tmp[0].', "km '.$tmp[0].'"], ';
-		$y2Str .= '['.$tmp[0].', "'.$tmp[2].'"], ';
-		$mapHeight +=10;
-		$i++;
-	}while($i<count($a_destName));
-	//======================= Y axis values (end) ================================
-	
-	
-	$fileCount = count($_FILES['fileCSV']['name']);
+    $fileCount = count($_FILES['fileCSV']['name']);
 
     //============ Parsing data from file into array (start) ============
-	foreach($_FILES['fileCSV']['tmp_name'] as $fkey => $fval)
-	{
-	
-		if($_FILES['fileCSV']['tmp_name'][$fkey]!=""){
-			$a_str = file($_FILES['fileCSV']['tmp_name'][$fkey]);
-		}else{
-			continue;
-		}
-		
-		//printr($_FILES);
-		//printr($a_str);
-		
-		$station = "";
+    foreach ($_FILES['fileCSV']['tmp_name'] as $fkey => $fval) {
+
+        if ($_FILES['fileCSV']['tmp_name'][$fkey] != "") {
+            $a_str = file($_FILES['fileCSV']['tmp_name'][$fkey]);
+        } else {
+            continue;
+        }
+
+        //printr($_FILES);
+        //printr($a_str);
+
+        $station = "";
         $timestamp = 0;
-		$a_result = array();
-		$i=5;
-		$counter = count($a_str);
-		do{
-			$tmp = explode(',', $a_str[$i]);
-			if($tmp[0]==""){
-				$station = $tmp[2];
-				$tmp = explode(',', $a_str[++$i]);
-			}
-			//printr($tmp);
-			$timestamp = (int) strtotime(get_real_time_format($tmp[1]));
-			//$exists = array_key_exists($timestamp, $a_result);
-			if(array_key_exists($timestamp, $a_result)){
-				$a_result[$timestamp]['timestamp'] = $timestamp + 30;
-				$a_result[$timestamp]['dateTime'] = date('d/m/Y h:i:sa', $timestamp + 30);
-				$a_result[$timestamp + 30] = $a_result[$timestamp];//if(($timestamp+30)==1282379550)echo "got value";
-			}
-			//----------------------------------------------------
-			$latlong = explode(' ', $tmp[2]);
-			$lat = explode(':', $latlong[0]);
-			$long = explode(':', $latlong[1]);
-			$speed = explode(':', $latlong[2]);
-			//----------------------------------------------------
-			$a_result[$timestamp]['station'] = trim($station);
-			$a_result[$timestamp]['timestamp'] = $timestamp;
-			$a_result[$timestamp]['dateTime'] = date('d/m/Y h:i:sa', $timestamp);
-			$a_result[$timestamp]['trainID'] = ucwords(str_replace(array('-','_'), ' ', basename($_FILES['fileCSV']['name'][$fkey], '.csv')));
-			$a_result[$timestamp]['lat'] = $lat[1];
-			$a_result[$timestamp]['long'] = $long[1];
-			$a_result[$timestamp]['speed'] = trim($speed[1]);
-			$a_result[$timestamp]['track-url'] = rtrim(trim($a_str[$i+2]), "\",");
-		
-			$i += 3;
-			
-		}while($i<$counter);
+        $a_result = array();
+        $i = 5;
+        $counter = count($a_str);
+        do {
+            $tmp = explode(',', $a_str[$i]);
+            if ($tmp[0] == "") {
+                $station = $tmp[2];
+                $tmp = explode(',', $a_str[++$i]);
+            }
+            //printr($tmp);
+            $timestamp = (int) strtotime(get_real_time_format($tmp[1]));
+            //$exists = array_key_exists($timestamp, $a_result);
+            if (array_key_exists($timestamp, $a_result)) {
+                $a_result[$timestamp]['timestamp'] = $timestamp + 30;
+                $a_result[$timestamp]['dateTime'] = date('d/m/Y h:i:sa', $timestamp + 30);
+                $a_result[$timestamp + 30] = $a_result[$timestamp]; //if(($timestamp+30)==1282379550)echo "got value";
+            }
+            //----------------------------------------------------
+            $latlong = explode(' ', $tmp[2]);
+            $lat = explode(':', $latlong[0]);
+            $long = explode(':', $latlong[1]);
+            $speed = explode(':', $latlong[2]);
+            //----------------------------------------------------
+            $a_result[$timestamp]['station'] = trim($station);
+            $a_result[$timestamp]['timestamp'] = $timestamp;
+            $a_result[$timestamp]['dateTime'] = date('d/m/Y h:i:sa', $timestamp);
+            $a_result[$timestamp]['trainID'] = ucwords(str_replace(array('-', '_'), ' ', basename($_FILES['fileCSV']['name'][$fkey], '.csv')));
+            $a_result[$timestamp]['lat'] = $lat[1];
+            $a_result[$timestamp]['long'] = $long[1];
+            $a_result[$timestamp]['speed'] = trim($speed[1]);
+            $a_result[$timestamp]['track-url'] = rtrim(trim($a_str[$i + 2]), "\",");
+
+            $i += 3;
+        } while ($i < $counter);
         //============ Parsing data from file into array (end) ==============
-
         // Sorting array in ascending order
-		if($_POST['selTrack'][$fkey]=='Up Track'){
-        	ksort($a_result);
-		}else{
-			krsort($a_result);
-		}
-        
-		//echo count($a_result);
-		//printr($a_result);
+        if ($_POST['selTrack'][$fkey] == 'Up Track') {
+            ksort($a_result);
+        } else {
+            krsort($a_result);
+        }
 
+        //echo count($a_result);
+        //printr($a_result);
         //============ Generating line string to use in JS (start) ============
-		$iTime = 1;
-		$iDist = 1;
-		$aCount = count($a_result);
+        $iTime = 1;
+        $iDist = 1;
+        $aCount = count($a_result);
         $dd = 0;
         unset($lat2);
         unset($lon2);
-		
-		foreach ($a_result as $key => $val) {
-			$lat1 = $val['lat'];
-			$lon1 = $val['long'];
-			//$str .= "[$lat1, $lon1],";
-			if($_POST['selTrack'][$fkey]=='Up Track'){
-				if($iTime==1){ $time[$fkey]['minTime'] = $minTime = $val['timestamp']; }
-				if($iTime==$aCount){ $time[$fkey]['maxTime'] = $maxTime = $val['timestamp']; }
-			}else{
-				if($iTime==1){ $time[$fkey]['maxTime'] = $maxTime = $val['timestamp']; }
-				if($iTime==$aCount){ $time[$fkey]['minTime'] = $minTime = $val['timestamp']; }
-			}
-			
-			if(!isset($str[$fkey]['trainID'])){
-				$str[$fkey]['trainID'] = $val['trainID'];
-			}
-			
-			if(isset($lat2) && isset($lon2)){
-				$d = get_distance($lat1, $lat2, $lon1, $lon2);
-	
-				$dd += $d;
-				
-				if($iDist==1 || !isset($minDist)){ $minDist = $d; }
-				if($iDist==$aCount){ $maxDist = $dd; }
-			
-				$str[$fkey]['line'] .= "[".$val['timestamp'].", ".($dd)."],";
-			}
-			$lat2 = $lat1;
-			$lon2 = $lon1;
-			
-			$iTime++;
-			$iDist++;
-		}// End result loop
-		$str[$fkey]['track'] = $_POST['selTrack'][$fkey];
-	}// End file loop
-    //============ Generating line string to use in JS (end) ==============
 
+        foreach ($a_result as $key => $val) {
+            $lat1 = $val['lat'];
+            $lon1 = $val['long'];
+            //$str .= "[$lat1, $lon1],";
+            if ($_POST['selTrack'][$fkey] == 'Up Track') {
+                if ($iTime == 1) {
+                    $time[$fkey]['minTime'] = $minTime = $val['timestamp'];
+                }
+                if ($iTime == $aCount) {
+                    $time[$fkey]['maxTime'] = $maxTime = $val['timestamp'];
+                }
+            } else {
+                if ($iTime == 1) {
+                    $time[$fkey]['maxTime'] = $maxTime = $val['timestamp'];
+                }
+                if ($iTime == $aCount) {
+                    $time[$fkey]['minTime'] = $minTime = $val['timestamp'];
+                }
+            }
+
+            if (!isset($str[$fkey]['trainID'])) {
+                $str[$fkey]['trainID'] = $val['trainID'];
+            }
+
+            if (isset($lat2) && isset($lon2)) {
+                $d = get_distance($lat1, $lat2, $lon1, $lon2);
+
+                $dd += $d;
+
+                if ($iDist == 1 || !isset($minDist)) {
+                    $minDist = $d;
+                }
+                if ($iDist == $aCount) {
+                    $maxDist = $dd;
+                }
+
+                $str[$fkey]['line'] .= "[" . $val['timestamp'] . ", " . ($dd) . "],";
+            }
+            $lat2 = $lat1;
+            $lon2 = $lon1;
+
+            $iTime++;
+            $iDist++;
+        }// End result loop
+        $str[$fkey]['track'] = $_POST['selTrack'][$fkey];
+    }// End file loop
+    //============ Generating line string to use in JS (end) ==============
     //============ Making xAxis base line value string to use in JS (start) ============
     if (is_array($time)) {
         foreach ($time as $val) {
@@ -185,25 +151,18 @@ if(isset($_POST['Submit']))
     }
     //printr($time);
     //echo $minTime.'::'.$maxTime;
-    $tStamp = strtotime(date('Y-m-d H:00:00',$minTime));
-	$interval = 60;
-	for($i=$minTime; $i<=($maxTime+($maxTime-$minTime)); $i+=60)
-	{
-		if( (($interval/60)%20) == 0 ){
-			//echo "$tStamp<br/>";
-			$xStr .= '['.($tStamp+$interval).', "<div>'.date("M,d-H:i", ($tStamp+$interval)).'</div>"], ';
-		}
-		$interval += 60;
-		//echo $i."<br>";
-	}
+    $tStamp = strtotime(date('Y-m-d H:00:00', $minTime));
+    $interval = 60;
+    for ($i = $minTime; $i <= ($maxTime + ($maxTime - $minTime)); $i+=60) {
+        if ((($interval / 60) % 20) == 0) {
+            //echo "$tStamp<br/>";
+            $xStr .= '[' . ($tStamp + $interval) . ', "<div>' . date("M,d-H:i", ($tStamp + $interval)) . '</div>"], ';
+        }
+        $interval += 60;
+        //echo $i."<br>";
+    }
     //============ Making xAxis base line value string to use in JS (end) ==============
 
-	/*
-	//echo ":".$minDist.'-'.$maxDist;
-	for($i=$minDist; $i<=$maxDist+20; $i +=20){
-		$yStr .= '['.sprintf('%.2f', $i).', "km '.sprintf('%.2f', $i).'"], ';
-	}
-	*/
 }
 ?>
 
@@ -213,84 +172,20 @@ if(isset($_POST['Submit']))
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>GPS Track Report Graph</title>
     <link href="css/layout.css" rel="stylesheet" type="text/css"></link>
+    <link href="css/style.css" rel="stylesheet" type="text/css"></link>
     <!--[if IE]><script language="javascript" type="text/javascript" src="js/excanvas.min.js"></script><![endif]-->
     <script language="javascript" type="text/javascript" src="js/jquery.js"></script>
     <script language="javascript" type="text/javascript" src="js/jquery.flot.js"></script>
 	<script language="javascript" type="text/javascript" src="js/jquery.flot.navigate.js"></script>
-	<style>
-        .page-header h1{
-            line-height:0;
-        }
-        .page-header h3{
-            line-height:0;
-            padding-top:5px;
-        }
-        .page-header h4{
-            color:#9999AF;
-            line-height:10px;
-        }
-        /********************/
-        #track-root{
-            padding-bottom: 10px;
-        }
-        #track-file-group .track-file{
-            padding-bottom: 10px;
-        }
-        #placeholder .button-zoom-in,
-        #placeholder .button-zoom-out,
-        #placeholder .route-label,
-        #placeholder .button{
-            position: absolute;
-            cursor: pointer;
-        }
-        #placeholder .button-zoom-in,
-        #placeholder .button-zoom-out,
-        #placeholder .route-label,
-        #placeholder div.button {
-            font-size: smaller;
-            color: #999;
-            background-color: #eee;
-            padding: 2px;
-        }
-        #placeholder .button-zoom-in,
-        #placeholder .button-zoom-out{
-            top: 40px;
-            padding: 3px 8px;
-        }
-
-        #placeholder .button-zoom-in{
-            left: 160px;
-
-        }
-        #placeholder .button-zoom-out{
-            left: 240px;
-        }
-        #placeholder .route-label{
-            top: 20px;
-            left: 400px;
-            padding: 3px 8px;
-            text-align: center;
-        }
-        .message {
-            padding-left: 50px;
-            font-size: smaller;
-        }
-		/***************************/
-		.tickLabel div{
-			-webkit-transform: rotate(-90deg);
-			-moz-transform: rotate(90deg); 
-			margin-top: 10px;
-		}
-    </style>
 
  </head>
-    <body>
-        <div class="page-header">
+    <body style="<?php echo isset($_GET['print']) ? "print" : "";?>">
+        <div class="page-header print_area">
             <h1>Train Control Chart</h1>
             <h3>Bangladesh Railway</h3>
-            <h4>[ Developed by - S. M. Ariful Islam, Suncrops ]</h4>
+            <h4>[ Developed by - Suncrops ]</h4>
         </div>
-        <hr style="padding-bottom:20px;border:0;border-top: 1px dotted #000;" />
+        <hr class="print_area" style="padding-bottom:20px;border:0;border-top: 1px dotted #000;" />
     <form name="form1" enctype="multipart/form-data" method="post" action="">
         Select the route:
         <div id="track-root">
@@ -316,10 +211,11 @@ if(isset($_POST['Submit']))
 		</div>
         <input type="submit" id="btn-submit" name="Submit" value="  Submit  ">
         <input type="button" id="btnAddMore" value="  Add More  ">
+        <input type="button" id="btnPrint" value="  Print  " onclick="window.print();">
         <br>
         <br>
     </form>
-    <div id="placeholder" style="width:1000px;height:800px;"></div>
+    <div class="print_area" id="placeholder" style="width:1000px;height:800px;"></div>
 
     <script id="source" language="javascript" type="text/javascript">
 $(function () {

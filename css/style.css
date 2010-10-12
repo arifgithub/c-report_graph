@@ -1,0 +1,86 @@
+/* 
+    Document   : style
+    Created on : Oct 12, 2010, 8:39:46 PM
+    Author     : arif
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+/* 
+   TODO customize this sample style
+   Syntax recommendation http://www.w3.org/TR/REC-CSS2/
+*/
+
+.page-header h1{
+    line-height:0;
+}
+.page-header h3{
+    line-height:0;
+    padding-top:5px;
+}
+.page-header h4{
+    color:#9999AF;
+    line-height:10px;
+}
+/********************/
+#track-root{
+    padding-bottom: 10px;
+}
+#track-file-group .track-file{
+    padding-bottom: 10px;
+}
+#placeholder .button-zoom-in,
+#placeholder .button-zoom-out,
+#placeholder .route-label,
+#placeholder .button{
+    position: absolute;
+    cursor: pointer;
+}
+#placeholder .button-zoom-in,
+#placeholder .button-zoom-out,
+#placeholder .route-label,
+#placeholder div.button {
+    font-size: smaller;
+    color: #999;
+    background-color: #eee;
+    padding: 2px;
+}
+#placeholder .button-zoom-in,
+#placeholder .button-zoom-out{
+    top: 40px;
+    padding: 3px 8px;
+}
+
+#placeholder .button-zoom-in{
+    left: 160px;
+
+}
+#placeholder .button-zoom-out{
+    left: 240px;
+}
+#placeholder .route-label{
+    top: 20px;
+    left: 400px;
+    padding: 3px 8px;
+    text-align: center;
+}
+.message {
+    padding-left: 50px;
+    font-size: smaller;
+}
+/***************************/
+.tickLabel div{
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(90deg);
+    margin-top: 10px;
+}
+
+/*****************************************
+*          Print CSS
+*****************************************/
+@media print{
+    body {visibility:hidden;}
+    .print_area {visibility:visible;}
+}
+
+
