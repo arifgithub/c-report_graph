@@ -79,8 +79,16 @@
 *          Print CSS
 *****************************************/
 @media print{
-    body {visibility:hidden;}
-    .print_area {visibility:visible;}
+    body{
+        margin: 0;
+        padding: 0;
+    }
+    #placeholder{
+        padding-left: 0;
+}
+    .no_print{
+        display:none;
+    }
 }
 
 

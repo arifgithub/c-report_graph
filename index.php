@@ -15,7 +15,7 @@ if (isset($_POST['Submit'])) {
     $i = 1;
     do {
         $tmp = explode(',', $a_destName[$i]);
-        $yStr .= '[' . $tmp[0] . ', "km ' . $tmp[0] . '"], ';
+        $yStr .= '[' . $tmp[0] . ', "km&nbsp;' . $tmp[0] . '"], ';
         $y2Str .= '[' . $tmp[0] . ', "' . $tmp[2] . '"], ';
         $mapHeight +=10;
         $i++;
@@ -180,13 +180,13 @@ if (isset($_POST['Submit'])) {
 
  </head>
     <body style="<?php echo isset($_GET['print']) ? "print" : "";?>">
-        <div class="page-header print_area">
+        <div class="page-header">
             <h1>Train Control Chart</h1>
             <h3>Bangladesh Railway</h3>
             <h4>[ Developed by - Suncrops ]</h4>
         </div>
         <hr class="print_area" style="padding-bottom:20px;border:0;border-top: 1px dotted #000;" />
-    <form name="form1" enctype="multipart/form-data" method="post" action="">
+    <form class="no_print" name="form1" enctype="multipart/form-data" method="post" action="">
         Select the route:
         <div id="track-root">
             <select id="selRoute" name="selRoute">
@@ -215,7 +215,7 @@ if (isset($_POST['Submit'])) {
         <br>
         <br>
     </form>
-    <div class="print_area" id="placeholder" style="width:1000px;height:800px;"></div>
+    <div class="" id="placeholder" style="width:1000px;height:800px;"></div>
 
     <script id="source" language="javascript" type="text/javascript">
 $(function () {
