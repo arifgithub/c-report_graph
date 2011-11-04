@@ -229,9 +229,6 @@ $(function () {
 	}
 	?>
 
-	//var d2 = [<?php echo rtrim($str[0], ',');?>];
-	//var d2Data = {data:d2, label: "Up track", color: 2 };
-
 	var data = [ <?php echo rtrim($Data, ",\n");?>, {data:[], color: 1,  yaxis: 2 } ];
 
     var plot = $.plot(placeholder, data,
